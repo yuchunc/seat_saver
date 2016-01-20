@@ -7,11 +7,42 @@ Elm.SeatSaver.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
    $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var main = $Html.text("Hello from Elm");
-   return _elm.SeatSaver.values = {_op: _op,main: main};
+   var seatItem = function (seat) {
+      return A2($Html.li,
+      _U.list([$Html$Attributes.$class("seat available")]),
+      _U.list([$Html.text($Basics.toString(seat.seatNo))]));
+   };
+   var view = function (model) {
+      return A2($Html.ul,
+      _U.list([$Html$Attributes.$class("seats")]),
+      A2($List.map,seatItem,model));
+   };
+   var init = _U.list([{seatNo: 1,occupied: false}
+                      ,{seatNo: 2,occupied: false}
+                      ,{seatNo: 3,occupied: false}
+                      ,{seatNo: 4,occupied: false}
+                      ,{seatNo: 5,occupied: false}
+                      ,{seatNo: 6,occupied: false}
+                      ,{seatNo: 7,occupied: false}
+                      ,{seatNo: 8,occupied: false}
+                      ,{seatNo: 9,occupied: false}
+                      ,{seatNo: 10,occupied: false}
+                      ,{seatNo: 11,occupied: false}
+                      ,{seatNo: 12,occupied: false}]);
+   var Seat = F2(function (a,b) {
+      return {seatNo: a,occupied: b};
+   });
+   var main = view(init);
+   return _elm.SeatSaver.values = {_op: _op
+                                  ,main: main
+                                  ,Seat: Seat
+                                  ,init: init
+                                  ,view: view
+                                  ,seatItem: seatItem};
 };
