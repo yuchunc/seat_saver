@@ -8,21 +8,37 @@ Elm.SeatSaver.make = function (_elm) {
    $Debug = Elm.Debug.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
+   $Signal = Elm.Signal.make(_elm),
+   $StartApp$Simple = Elm.StartApp.Simple.make(_elm);
    var _op = {};
-   var seatItem = function (seat) {
+   var update = F2(function (action,model) {
+      var _p0 = action;
+      var updateSeat = function (seatFromModel) {
+         return _U.eq(seatFromModel.seatNo,
+         _p0._0.seatNo) ? _U.update(seatFromModel,
+         {occupied: $Basics.not(seatFromModel.occupied)}) : seatFromModel;
+      };
+      return A2($List.map,updateSeat,model);
+   });
+   var Toggle = function (a) {    return {ctor: "Toggle",_0: a};};
+   var seatItem = F2(function (address,seat) {
+      var occupiedClass = seat.occupied ? "occupied" : "available";
       return A2($Html.li,
-      _U.list([$Html$Attributes.$class("seat available")]),
+      _U.list([$Html$Attributes.$class(A2($Basics._op["++"],
+              "seat ",
+              occupiedClass))
+              ,A2($Html$Events.onClick,address,Toggle(seat))]),
       _U.list([$Html.text($Basics.toString(seat.seatNo))]));
-   };
-   var view = function (model) {
+   });
+   var view = F2(function (address,model) {
       return A2($Html.ul,
       _U.list([$Html$Attributes.$class("seats")]),
-      A2($List.map,seatItem,model));
-   };
+      A2($List.map,seatItem(address),model));
+   });
    var init = _U.list([{seatNo: 1,occupied: false}
                       ,{seatNo: 2,occupied: false}
                       ,{seatNo: 3,occupied: false}
@@ -38,11 +54,15 @@ Elm.SeatSaver.make = function (_elm) {
    var Seat = F2(function (a,b) {
       return {seatNo: a,occupied: b};
    });
-   var main = view(init);
+   var main = $StartApp$Simple.start({model: init
+                                     ,update: update
+                                     ,view: view});
    return _elm.SeatSaver.values = {_op: _op
                                   ,main: main
                                   ,Seat: Seat
                                   ,init: init
+                                  ,Toggle: Toggle
+                                  ,update: update
                                   ,view: view
                                   ,seatItem: seatItem};
 };
