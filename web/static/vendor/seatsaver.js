@@ -12205,6 +12205,18 @@ Elm.SeatSaver.make = function (_elm) {
    $StartApp = Elm.StartApp.make(_elm),
    $Task = Elm.Task.make(_elm);
    var _op = {};
+   var seatLists = Elm.Native.Port.make(_elm).inboundSignal("seatLists",
+   "SeatSaver.Model",
+   function (v) {
+      return typeof v === "object" && v instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.map(function (v) {
+         return typeof v === "object" && "seatNo" in v && "occupied" in v ? {_: {}
+                                                                            ,seatNo: typeof v.seatNo === "number" && isFinite(v.seatNo) && Math.floor(v.seatNo) === v.seatNo ? v.seatNo : _U.badPort("an integer",
+                                                                            v.seatNo)
+                                                                            ,occupied: typeof v.occupied === "boolean" ? v.occupied : _U.badPort("a boolean (true or false)",
+                                                                            v.occupied)} : _U.badPort("an object with fields `seatNo`, `occupied`",
+         v);
+      })) : _U.badPort("an array",v);
+   });
    var update = F2(function (action,model) {
       var _p0 = action;
       if (_p0.ctor === "Toggle") {
@@ -12239,6 +12251,7 @@ Elm.SeatSaver.make = function (_elm) {
       _U.list([$Html$Attributes.$class("seats")]),
       A2($List.map,seatItem(address),model));
    });
+   var init = {ctor: "_Tuple2",_0: _U.list([]),_1: $Effects.none};
    var Seat = F2(function (a,b) {
       return {seatNo: a,occupied: b};
    });
@@ -12258,7 +12271,6 @@ Elm.SeatSaver.make = function (_elm) {
    $Task.toMaybe(A2($Http.get,
    decodeSeats,
    "http://localhost:4000/api/seats"))));
-   var init = {ctor: "_Tuple2",_0: _U.list([]),_1: fetchSeats};
    var app = $StartApp.start({init: init
                              ,update: update
                              ,view: view

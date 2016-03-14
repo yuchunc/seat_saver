@@ -15,7 +15,7 @@ app =
   { init = init
   , update = update
   , view = view
-  , inputs = []
+  , inputs = [incomingActions]
   }
 
 
@@ -31,7 +31,6 @@ port tasks =
 
 -- MODEL
 
-
 type alias Seat =
   { seatNo : Int
   , occupied : Bool
@@ -44,11 +43,10 @@ type alias Model =
 
 init: (Model, Effects Action)
 init =
-  ([], fetchSeats)
+  ([], Effects.none)
 
 
 -- EFFECTS
-
 
 fetchSeats: Effects Action
 fetchSeats =
@@ -71,8 +69,7 @@ decodeSeats =
 
 -- UPDATE
 
-
-type Action = Toggle Seat | SetSeats (Maybe Model)
+type Action = Toggle Seat | SetSeats Model
 
 
 update : Action -> Model -> (Model, Effects Action)
@@ -87,15 +84,10 @@ update action model =
       in
         (List.map updateSeat model, Effects.none)
     SetSeats seats ->
-      let
-        newModel = Maybe.withDefault model seats
-      in
-        (newModel, Effects.none)
-
+        (seats, Effects.none)
 
 
 -- VIEW
-
 
 view: Signal.Address Action -> Model -> Html
 view address model =
@@ -113,3 +105,13 @@ seatItem address seat =
       , onClick address (Toggle seat)
       ]
       [ text (toString seat.seatNo) ]
+
+
+-- SIGNALS
+
+port seatLists : Signal Model
+
+
+incomingActions: Signal Action
+incomingActions =
+  Signal.map SetSeats seatLists

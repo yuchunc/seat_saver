@@ -18,7 +18,22 @@ import "phoenix_html"
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
-// import socket from "./socket"
+import socket from "./socket"
 
-let elmDiv = document.getElementById('elm-main')
-let elmApp = Elm.embed(Elm.SeatSaver, elmDiv);
+//let elmDiv = document.getElementById('elm-main')
+//let elmApp = Elm.embed(Elm.SeatSaver, elmDiv);
+
+var elmDiv = document.getElementById('elm-main')
+  , initialState = {seatLists: []}
+  , elmApp = Elm.embed(Elm.SeatSaver, elmDiv, initialState);
+
+// Now that you are connected, you can join channels with a topic:
+let channel = socket.channel("seats:planner", {})
+channel.join()
+  .receive("ok", resp => { console.log("Joined successfully", resp) })
+  .receive("error", resp => { console.log("Unable to join", resp) })
+
+channel.on('set_seats', data => {
+  console.log('got seats', data.seats)
+  elmApp.ports.seatLists.send(data.seats)
+})
