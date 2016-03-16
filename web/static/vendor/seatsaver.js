@@ -12196,7 +12196,6 @@ Elm.SeatSaver.make = function (_elm) {
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
-   $Http = Elm.Http.make(_elm),
    $Json$Decode = Elm.Json.Decode.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
@@ -12229,13 +12228,13 @@ Elm.SeatSaver.make = function (_elm) {
                    ,_0: A2($List.map,updateSeat,model)
                    ,_1: $Effects.none};
          } else {
-            var newModel = A2($Maybe.withDefault,model,_p0._0);
-            return {ctor: "_Tuple2",_0: newModel,_1: $Effects.none};
+            return {ctor: "_Tuple2",_0: _p0._0,_1: $Effects.none};
          }
    });
    var SetSeats = function (a) {
       return {ctor: "SetSeats",_0: a};
    };
+   var incomingActions = A2($Signal.map,SetSeats,seatLists);
    var Toggle = function (a) {    return {ctor: "Toggle",_0: a};};
    var seatItem = F2(function (address,seat) {
       var occupiedClass = seat.occupied ? "occupied" : "available";
@@ -12266,15 +12265,10 @@ Elm.SeatSaver.make = function (_elm) {
       _U.list(["data"]),
       $Json$Decode.list(seat));
    }();
-   var fetchSeats = $Effects.task(A2($Task.map,
-   SetSeats,
-   $Task.toMaybe(A2($Http.get,
-   decodeSeats,
-   "http://localhost:4000/api/seats"))));
    var app = $StartApp.start({init: init
                              ,update: update
                              ,view: view
-                             ,inputs: _U.list([])});
+                             ,inputs: _U.list([incomingActions])});
    var main = app.html;
    var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",
    app.tasks);
@@ -12283,11 +12277,11 @@ Elm.SeatSaver.make = function (_elm) {
                                   ,main: main
                                   ,Seat: Seat
                                   ,init: init
-                                  ,fetchSeats: fetchSeats
                                   ,decodeSeats: decodeSeats
                                   ,Toggle: Toggle
                                   ,SetSeats: SetSeats
                                   ,update: update
                                   ,view: view
-                                  ,seatItem: seatItem};
+                                  ,seatItem: seatItem
+                                  ,incomingActions: incomingActions};
 };

@@ -31,6 +31,7 @@ port tasks =
 
 -- MODEL
 
+
 type alias Seat =
   { seatNo : Int
   , occupied : Bool
@@ -48,12 +49,12 @@ init =
 
 -- EFFECTS
 
-fetchSeats: Effects Action
-fetchSeats =
-  Http.get decodeSeats "http://localhost:4000/api/seats"
-    |> Task.toMaybe
-    |> Task.map SetSeats
-    |> Effects.task
+--fetchSeats: Effects Action
+--fetchSeats =
+  --Http.get decodeSeats "http://localhost:4000/api/seats"
+    --|> Task.toMaybe
+    --|> Task.map SetSeats
+    --|> Effects.task
 
 
 decodeSeats: Json.Decoder Model
@@ -68,6 +69,7 @@ decodeSeats =
 
 
 -- UPDATE
+
 
 type Action = Toggle Seat | SetSeats Model
 
@@ -108,6 +110,7 @@ seatItem address seat =
 
 
 -- SIGNALS
+
 
 port seatLists : Signal Model
 

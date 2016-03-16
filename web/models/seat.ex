@@ -31,5 +31,4 @@ defimpl Poison.Encoder, for: SeatSaver.Seat do
        occupied: model.occupied
      } |> Poison.Encoder.encode(opts)
   end
-
 end
