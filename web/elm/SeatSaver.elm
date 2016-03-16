@@ -29,6 +29,11 @@ port tasks =
   app.tasks
 
 
+port seatRequests : Signal Seat
+port seatRequests =
+  seatRequestsBox.signal
+
+
 -- MODEL
 
 
@@ -68,6 +73,12 @@ decodeSeats =
     Json.at ["data"] (Json.list seat)
 
 
+sendSeatRequest : Seat -> Effects Action
+sendSeatRequest seat =
+  Signal.send seatRequestsBox.address seat
+    |> Effects.task
+    |> Effects.map (always NoOP)
+
 -- UPDATE
 
 
@@ -87,6 +98,10 @@ update action model =
         (List.map updateSeat model, Effects.none)
     SetSeats seats ->
         (seats, Effects.none)
+    RequestSeat seat ->
+      (model, sendSeatRequest seat)
+    NoOP ->
+      (model, Effects.none)
 
 
 -- VIEW
@@ -104,7 +119,7 @@ seatItem address seat =
   in
     li
       [ class ("seat " ++ occupiedClass)
-      , onClick address (Toggle seat)
+      , onClick address (RequestSeat seat)
       ]
       [ text (toString seat.seatNo) ]
 
@@ -118,3 +133,8 @@ port seatLists : Signal Model
 incomingActions: Signal Action
 incomingActions =
   Signal.map SetSeats seatLists
+
+
+seatRequestsBox : Signal.Mailbox Seat
+seatRequestsBox =
+  Signal.mailbox (Seat 0 false)

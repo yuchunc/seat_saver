@@ -37,3 +37,8 @@ channel.on('set_seats', data => {
   console.log('got seats', data.seats)
   elmApp.ports.seatLists.send(data.seats)
 })
+
+// listen for seat requests
+elm.ports.seatRequests.subscribe(seat => {
+  console.log(seat)
+})
